@@ -2,15 +2,11 @@
 
 ## Objectif
 
-Déployer une machine "template" sur qemu. L'idée est de créer une machine respectant une configuration précise pour y réaliser des déploiements automatiques ou différents tests. 
-La machine se déploie à l'aide d'un Preseed (template *Jinja2* dans http/preseed.cfg.j2) qui va configurer le minimum requis : 
+Déployer une machine “template” sur qemu. L’idée est de créer une machine respectant une configuration précise pour y réaliser des déploiements automatiques ou différents tests. 
+La machine se déploie à l’aide d’un Preseed (template *Jinja2* dans http/preseed.cfg.j2) qui va configurer le minimum requis : 
 - Un utilisateur root (accessible via ssh)
 - Ansible
 - des packages basiques (vim, python etc..)
-
-## Todo
-- Mettre l'utilisation du proxy 
-- Pouvoir mettre les paramètres en CLI / Interactif / Depuis un fichier .env
 
 ## Getting Started
 ### Pré-Requis
@@ -29,9 +25,23 @@ Ajouter \~/.local/bin à son $PATH (pour utiliser les binaires gérés par pip)
 
 ### Lancer le projet
 
-Générer une clé ($HOME/.ssh/id_rsa) ou modifier le fichier *build.sh* pour y mettre l'emplacement de la clé SSH utilisée par l'utilisateur démarrant le script.
+Générer une clé ($HOME/.ssh/id_rsa) ou modifier le fichier *build.sh* pour y mettre l’emplacement de la clé SSH utilisée par l’utilisateur démarrant le script.
 
     ssh-keygen -t rsa -b 4096 
     ./build.sh
 
 
+# TroubleShooting
+## No matching host key type found
+Si vous êtes sur Ubuntu, vous devrez ajouter le ssh-rsa en algorithme de chiffrement compatible. 
+Voici l’erreur sur laquelle vous tomberez : 
+```
+    proxmox: fatal: [default]: UNREACHABLE! => {"changed": false, "msg": "Failed to connect to the host via ssh: Unable to negotiate with 127.0.0.1 port 32985: no matching host key type found. Their offer: ssh-rsa", "unreachable": true}
+```
+
+La solution est d’accepter cet algorithme dans votre fichier `~/.ssh/config`.
+```
+Host 127.0.0.1
+  HostKeyAlgorithms +ssh-rsa
+  PubkeyAcceptedAlgorithms +ssh-rsa
+```
